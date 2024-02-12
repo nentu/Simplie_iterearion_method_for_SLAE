@@ -3,7 +3,7 @@
 import cli
 import slae_solver
 from cli import Question, Respond, BACK_OPTION
-from matrix import Matrix
+from matrix import Matrix, get_potential_places
 from my_constants import *
 from utils import *
 
@@ -53,16 +53,6 @@ if not a.is_square():
 if a.get_determinant() == 0:
     error_exit(ZERO_DETERMINANT)
 
-
-def get_potential_places(a: Matrix):
-    res = list()
-    for row in a:
-        res.append(list())
-        s = sum([abs(i) for i in row])
-        for i in range(len(row)):
-            if abs(row[i]) >= s - abs(row[i]):
-                res[-1].append(i)
-    return res
 
 
 if not a.is_diagonal_dominance():

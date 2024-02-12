@@ -67,6 +67,7 @@ def random_vec_with_dominance(length: int, dom_index):
     return vec
 
 
+
 def get_unique_sequence(l: list, prev_list=list(), current_row=0):
     if current_row == len(l):
         return enumerate(prev_list)

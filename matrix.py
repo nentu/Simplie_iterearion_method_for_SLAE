@@ -95,6 +95,17 @@ class Matrix(list):
         swap(self, i, j)
 
 
+def get_potential_places(a: Matrix):
+    res = list()
+    for row in a:
+        res.append(list())
+        s = sum([abs(i) for i in row])
+        for i in range(len(row)):
+            if abs(row[i]) >= s - abs(row[i]):
+                res[-1].append(i)
+    return res
+
+
 if __name__ == '__main__':
     a = Matrix()
     for i in range(1, 14, 4):

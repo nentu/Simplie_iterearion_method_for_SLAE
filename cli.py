@@ -135,7 +135,7 @@ def print_matrix(a: Matrix, b: list):
     for i in range(len(a)):
         for j in range(len(a[i])):
             print(f'{round(a[i][j], 3)}*x_{j + 1}', end=' + ' if j != len(a) - 1 else ' = ')
-        print(b[i])
+        print(round(b[i], 3))
     print('*====')
 
 

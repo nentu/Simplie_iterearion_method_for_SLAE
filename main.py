@@ -3,7 +3,7 @@
 import cli
 import slae_solver
 from cli import Question, Respond, BACK_OPTION
-from matrix import Matrix, get_potential_places
+from matrix import Matrix
 from my_constants import *
 from utils import *
 
@@ -48,46 +48,17 @@ cli.print_matrix(a, b)
 
 # --- CHECK ---
 if not a.is_square():
-    error_exit(NOW_SQUARE)
+    error_exit(NOT_SQUARE)
 
 if a.get_determinant() == 0:
     error_exit(ZERO_DETERMINANT)
 
-
-
 if not a.is_diagonal_dominance():
-    potential_places = get_potential_places(a)
+    new_matrix, new_b = a.reduce_diagonal_dominance(b)
 
-    # empty_rows = len(a)
+    a = Matrix.from_list(new_matrix)
+    b = new_b.copy()
 
-    paths = get_unique_sequence(potential_places)
-
-    if paths is not None:
-        new_matrix = Matrix()
-        new_matrix.fill_zeroes(len(a), len(a))
-        new_b = [0 for i in range(len(b))]
-
-        for original_row, new_row in paths:
-            new_matrix[new_row] = a[original_row]
-            new_b[new_row] = b[original_row]
-
-        a = Matrix.from_list(new_matrix)
-        b = new_b.copy()
-
-    # changed = True
-    # while changed:
-    #     changed = False
-    #     for row_i in range(len(potential_places) - 1, -1, -1):
-    #         if len(potential_places[row_i]) == 1:
-    #             index = potential_places[row_i][0]
-    #
-    #             new_matrix[index] = a[row_i].copy()
-    #             new_b[index] = b[row_i]
-    #
-    #             potential_places[row_i].clear()
-    #             del_from_row(potential_places, index)
-    #             empty_rows -= 1
-    #             changed = True
     if not a.is_diagonal_dominance():
         print(NO_DIAGONAL_DOMINANCE)
 
@@ -95,4 +66,4 @@ if not a.is_diagonal_dominance():
 
 # Now let's solve our SoLAE (System of linear algebraic equations)
 
-slae_solver.solve(a, b, epsilon)
+slae_solver.simple_iteration(a, b, epsilon)

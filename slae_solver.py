@@ -1,9 +1,39 @@
+import cli
 from matrix import Matrix
 from my_constants import *
 from utils import *
 
 
-def solve(matrix: Matrix, b: list, epsilon: float, max_bad_epochs=100):
+def gauss(matrix: Matrix, b: list):
+    a = matrix
+    n = len(a)
+    
+    x = [0 for _ in range(n)]
+    for i in range(n - 1):
+        k = a[i][i]
+        if k == 0:
+            for j in range(i + 1, n):
+                if a[j][i] != 0:
+                    k = a[j][i]
+                    swap(a, i, j)
+                    swap(b, i, j)
+                    break
+            else:
+                return 0
+        for j in range(i + 1, n):
+            t = mul_vec(a[i], - a[j][i] / k)
+            a[j] = sum_vec(a[j], t)
+
+            b[j] -= b[j] * a[j][i] / k
+
+    for i in range(n - 1, -1, -1):
+        t = b[i] - sum([a[i][j] * x[j] for j in range(i + 1, n - 1)])
+        x[i] = 1 / a[i][i] * t
+
+    cli.print_matrix(a, b)
+
+
+def simple_iteration(matrix: Matrix, b: list, epsilon: float, max_bad_epochs=100):
     x = b.copy()
     prev_x = [b[i] / matrix[i][i] for i in range(len(b))]
 

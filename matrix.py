@@ -79,20 +79,102 @@ class Matrix(list):
     #     return res
 
     def is_diagonal_dominance(self) -> bool:
-        res = False
         for i in range(len(self)):
             summ = sum(abs(self[i][j]) for j in range(len(self)) if i != j)
             if not self[i][i] >= summ:
                 return False
-            if self[i][i] > summ:
-                res = True
-        return res
+
+        return True
 
     def _max_column_index(self, column: int) -> int:
         return max(enumerate(self), key=lambda x: x[1][column])[0]
 
     def swap(self, i: int, j: int):
         swap(self, i, j)
+
+    def reduce_diagonal_dominance(self, b):
+        potential_places = get_potential_places(self)
+
+        empty_rows = set(range(len(self)))
+        unused_rows = set(range(len(self)))
+        new_matrix = Matrix()
+        new_matrix.fill_zeroes(len(self), len(self))
+        new_b = [0 for _ in range(len(b))]
+
+        # paths = get_unique_sequence(potential_places)
+        #
+        # if paths is not None:
+        #     new_matrix = Matrix()
+        #     new_matrix.fill_zeroes(len(self), len(self))
+        #     new_b = [0 for i in range(len(b))]
+        #
+        #     for original_row, new_row in paths:
+        #         new_matrix[new_row] = self[original_row]
+        #         new_b[new_row] = b[original_row]
+        #
+        #     self = Matrix.from_list(new_matrix)
+        #     b = new_b.copy()
+
+        # Rows
+        changed = True
+        while changed:
+            changed = False
+            for row_i in range(len(potential_places) - 1, -1, -1):
+                if len(potential_places[row_i]) == 1:
+                    index = potential_places[row_i][0]
+
+                    new_matrix[index] = self[row_i].copy()
+                    new_b[index] = b[row_i]
+
+                    potential_places[row_i].clear()
+                    del_from_row(potential_places, index)
+                    empty_rows.remove(index)
+                    unused_rows.remove(row_i)
+
+                    changed = True
+
+            if changed:
+                continue
+            # Columns
+            empty_rows = list(empty_rows)
+            unused_rows = list(unused_rows)
+
+            for column_i in range(len(empty_rows) - 1, -1, -1):
+                column = empty_rows[column_i]
+                potential_row = -1
+                for row in range(len(potential_places)):
+                    if column in potential_places[row]:
+                        if potential_row == -1:
+                            potential_row = row
+                        else:
+                            break
+                else:
+                    if potential_row != -1:
+                        index = potential_row
+
+                        new_matrix[column] = self[index].copy()
+                        new_b[column] = b[index]
+
+                        potential_places[index].clear()
+                        empty_rows.remove(column)
+                        unused_rows.remove(index)
+
+                        changed = True
+            if changed:
+                continue
+
+            for i in unused_rows:
+                if len(potential_places[i]) == 2:
+                    del potential_places[i][0]
+                    changed = True
+                    break
+
+
+        # remaining rows
+        for i in range(len(empty_rows)):
+            new_matrix[empty_rows[i]] = self[unused_rows[i]]
+
+        return new_matrix, new_b
 
 
 def get_potential_places(a: Matrix):

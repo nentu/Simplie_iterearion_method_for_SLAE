@@ -1,6 +1,6 @@
-NOW_SQUARE = 'Matrix must be square'
+NOT_SQUARE = 'Matrix must be square'
 ZERO_DETERMINANT = 'Determinant can\'t be 0'
-NO_DIAGONAL_DOMINANCE = 'WAR: it is impossible to reduce matrices to diagonal dominance'
+NO_DIAGONAL_DOMINANCE = 'WAR: The matrix was not reduced to diagonal dominance'
 
 RESULT = 'Result'
 EPOCHS = 'Epochs'
